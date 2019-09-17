@@ -12,6 +12,8 @@ jobs:
           swiftenv install 5.0.3;
           swiftenv global 5.0.3;
           export LD_LIBRARY_PATH=$HOME/.swiftenv/versions/5.0.3/usr/lib/swift/linux:$LD_LIBRARY_PATH;
+          export PATH=$HOME/.swiftenv/versions/5.0.3/usr/bin:$PATH
+          swift -version
       - uses: actions/checkout@v1
       - name: test
         run: make test
@@ -23,6 +25,8 @@ jobs:
     name: macOS
     runs-on: macOS-latest
     steps:
+      - name: install
+        run: swift -version
       - uses: actions/checkout@v1
       - name: test
         run: make test
