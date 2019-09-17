@@ -10,13 +10,7 @@ jobs:
         os: [ubuntu-latest, macOS-latest]
     steps:
       - name: Install Swift
-        run: |
-          eval "$(curl -sL https://gist.githubusercontent.com/kylef/5c0475ff02b7c7671d2a/raw/9f442512a46d7a2af7b850d65a7e9bd31edfb09b/swiftenv-install.sh)";
-          swiftenv install 5.0.3;
-          swiftenv global 5.0.3;
-          export LD_LIBRARY_PATH=$HOME/.swiftenv/versions/5.0.3/usr/lib/swift/linux:$LD_LIBRARY_PATH;
-          export PATH=$HOME/.swiftenv/versions/5.0.3/usr/bin:$PATH
-          swift -version
+        run: docker://swift:latest
         if: matrix.os == 'ubuntu-latest'
       - name: Print Swift version
         run: swift -version
