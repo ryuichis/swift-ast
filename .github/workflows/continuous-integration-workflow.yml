@@ -1,0 +1,34 @@
+name: CI for Yanagiba Swift-AST
+on: [push, pull_request]
+
+jobs:
+  ubuntu:
+    name: Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - name: install
+        run: |
+          eval "$(curl -sL https://gist.githubusercontent.com/kylef/5c0475ff02b7c7671d2a/raw/9f442512a46d7a2af7b850d65a7e9bd31edfb09b/swiftenv-install.sh)";
+          swiftenv install 5.0.3;
+          swiftenv global 5.0.3;
+          export LD_LIBRARY_PATH=$HOME/.swiftenv/versions/5.0.3/usr/lib/swift/linux:$LD_LIBRARY_PATH;
+      - name: test
+        run: make test
+      - name: dog fooding
+        run: ./dogFooding.sh -diagnostics-only
+      - name: lint
+        run: ./lint.sh
+  macos:
+    name: macOS
+    runs-on: macOS-latest
+    steps:
+      - name: test
+        run: make test
+      - name: dog fooding
+        run: ./dogFooding.sh -diagnostics-only
+      - name: codecov
+        run: |
+          ./runXcodeTest.sh
+          bash <(curl -s https://codecov.io/bash)
+      - name: lint
+        run: ./lint.sh
