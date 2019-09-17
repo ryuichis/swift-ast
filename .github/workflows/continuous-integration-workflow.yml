@@ -2,11 +2,14 @@ name: CI for Yanagiba Swift-AST
 on: [push, pull_request]
 
 jobs:
-  ubuntu:
-    name: Ubuntu
-    runs-on: ubuntu-latest
+  ci:
+    name: CI
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
     steps:
-      - name: install
+      - name: Install Swift
         run: |
           eval "$(curl -sL https://gist.githubusercontent.com/kylef/5c0475ff02b7c7671d2a/raw/9f442512a46d7a2af7b850d65a7e9bd31edfb09b/swiftenv-install.sh)";
           swiftenv install 5.0.3;
@@ -14,27 +17,20 @@ jobs:
           export LD_LIBRARY_PATH=$HOME/.swiftenv/versions/5.0.3/usr/lib/swift/linux:$LD_LIBRARY_PATH;
           export PATH=$HOME/.swiftenv/versions/5.0.3/usr/bin:$PATH
           swift -version
-      - uses: actions/checkout@v1
-      - name: test
-        run: make test
-      - name: dog fooding
-        run: ./dogFooding.sh -diagnostics-only
-      - name: lint
-        run: ./lint.sh
-  macos:
-    name: macOS
-    runs-on: macOS-latest
-    steps:
-      - name: install
+        if: matrix.os == 'ubuntu-latest'
+      - name: Print Swift version
         run: swift -version
       - uses: actions/checkout@v1
-      - name: test
+        with:
+          fetch-depth: 1
+      - name: Test
         run: make test
-      - name: dog fooding
+      - name: Dog Fooding
         run: ./dogFooding.sh -diagnostics-only
-      - name: codecov
+      - name: CodeCov
         run: |
           ./runXcodeTest.sh
           bash <(curl -s https://codecov.io/bash)
-      - name: lint
+        if: matrix.os == 'macOS-latest'
+      - name: Lint
         run: ./lint.sh
